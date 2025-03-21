@@ -1,17 +1,11 @@
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 
 class PickGif extends StatefulWidget {
   static const String pickGifMethod = "pick_gif";
 
-  const PickGif({
-    super.key,
-    required this.windowController,
-    required this.args,
-  });
+  const PickGif({super.key, required this.onPickGif});
 
-  final WindowController windowController;
-  final Map? args;
+  final Function(String) onPickGif;
 
   @override
   State<PickGif> createState() => _PickGifState();
@@ -20,30 +14,46 @@ class PickGif extends StatefulWidget {
 class _PickGifState extends State<PickGif> {
   String _url = '';
 
+  void onSubmit() {
+    widget.onPickGif(_url);
+  }
+
+  void onCancel() {
+    widget.onPickGif("");
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Выбор GIF')),
-        body: Center(
+    return Container(
+      height: 300,
+      width: 450,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Text('Выберите GIF'),
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _url = value;
-                  });
-                },
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final result =
-                      await DesktopMultiWindow.invokeMethod(0, PickGif.pickGifMethod, _url);
-                  widget.windowController.close();
-                },
-                child: const Text('Choose GIF'),
+            children: [
+              const Text('Choose GIF'),
+              TextField(onChanged: (value) => setState(() => _url = value)),
+              Padding(
+                padding: const EdgeInsets.only(top: 32.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: onCancel,
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: onSubmit,
+                      child: const Text('Choose GIF'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

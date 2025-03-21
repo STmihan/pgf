@@ -6,3 +6,7 @@ class OnNewGifEvent {
   final String url;
   OnNewGifEvent(this.url);
 }
+
+class OnOpenGifPickerEvent {
+  OnOpenGifPickerEvent();
+}

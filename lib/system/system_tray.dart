@@ -1,7 +1,5 @@
-import 'dart:io';
-
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
+import 'package:pgf/system/events.dart';
 import 'package:system_tray/system_tray.dart';
 
 Future<void> initSystemTray() async {
@@ -14,7 +12,7 @@ Future<void> initSystemTray() async {
 
   final Menu menu = Menu();
   await menu.buildFrom([
-    MenuItemLabel(label: 'Change', onClicked: (menuItem) => onSelectGif()),
+    MenuItemLabel(label: 'Change', onClicked: (menuItem) => eventBus.fire(OnOpenGifPickerEvent())),
     MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
     MenuItemLabel(label: 'Hide', onClicked: (menuItem) => appWindow.hide()),
     MenuItemLabel(label: 'Exit', onClicked: (menuItem) => appWindow.close()),
@@ -25,18 +23,9 @@ Future<void> initSystemTray() async {
   systemTray.registerSystemTrayEventHandler((eventName) {
     debugPrint("eventName: $eventName");
     if (eventName == kSystemTrayEventClick) {
-      Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
+      appWindow.show();
     } else if (eventName == kSystemTrayEventRightClick) {
-      Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
+      systemTray.popUpContextMenu();
     }
   });
-}
-
-Future<void> onSelectGif() async {
-  final window = await DesktopMultiWindow.createWindow();
-  window
-    ..setFrame(const Offset(0, 0) & const Size(400, 300))
-    ..center()
-    ..setTitle('Pick GIF')
-    ..show();
 }
